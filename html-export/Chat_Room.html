@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epher - Chat Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        eBlack: '#111111',
+                        ePanel: '#161616',
+                        eCard: '#262626',
+                        ePurple: '#6E54B4',
+                        ePurpleMuted: '#4F407A',
+                        eTextMain: '#E8DDF7',
+                        eTextMuted: '#B8AECF',
+                        eTeal: '#2DD4BF',
+                        eOrange: '#FB923C',
+                    },
+                    borderRadius: {
+                        'box': '1.5rem',
+                        'btn': '1.25rem',
+                        'bubble': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-black flex items-center justify-center min-h-screen">
+    <div class="w-[430px] h-[932px] bg-eBlack text-eTextMain relative overflow-hidden flex flex-col font-sans ring-1 ring-white/10 shadow-2xl">
+        
+        <!-- Top App Bar -->
+        <header class="bg-ePurple h-[100px] pt-[48px] px-2 flex items-center justify-between z-20 shrink-0 shadow-md">
+            <div class="flex items-center gap-1">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full text-white/90 hover:bg-black/10 active:bg-black/20">
+                    <i class="ph-bold ph-caret-left text-2xl"></i>
+                </button>
+                <div class="flex flex-col ml-1 cursor-pointer">
+                    <span class="font-bold text-[15px] text-white">Night Shift</span>
+                    <span class="font-mono text-[10px] text-white/70">ID: 9X4-F2A</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 mr-2">
+                <button class="w-10 h-10 flex items-center justify-center rounded-full text-white/90 hover:bg-black/10">
+                    <div class="relative">
+                        <i class="ph-fill ph-users text-xl"></i>
+                        <div class="absolute -top-1 -right-1 bg-ePanel border border-ePurple text-[8px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white">3</div>
+                    </div>
+                </button>
+                <button class="w-10 h-10 flex items-center justify-center rounded-full text-white/90 hover:bg-black/10">
+                    <i class="ph-bold ph-shield-check text-xl"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Timeline / Message List -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-4 flex flex-col gap-5 z-10" style="padding-bottom: 90px;">
+            
+            <!-- System Notice -->
+            <div class="self-center flex flex-col items-center gap-1 mt-2 mb-4">
+                <span class="text-[9px] font-mono text-eTextMuted">10:42 AM</span>
+                <div class="bg-white/5 border border-white/10 px-4 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-sm">
+                    <i class="ph-fill ph-lock-key text-ePurple text-sm"></i>
+                    <span class="text-[11px] font-medium text-eTextMuted uppercase tracking-wider">End-to-End Encrypted Session Established</span>
+                </div>
+            </div>
+
+            <!-- Incoming Text Message -->
+            <div class="flex gap-3 max-w-[85%]">
+                <div class="w-9 h-9 rounded-full shrink-0 overflow-hidden bg-eCard border border-ePanel shadow-sm">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=100&h=100" alt="Avatar of participant Atlas" class="w-full h-full object-cover grayscale opacity-80 mix-blend-screen" />
+                </div>
+                <div class="flex flex-col gap-1 items-start">
+                    <span class="text-xs font-bold text-eTeal ml-2 flex items-center gap-1">
+                        Atlas
+                        <i class="ph-fill ph-check-circle text-[10px] text-eGreen"></i>
+                    </span>
+                    <div class="bg-eCard rounded-bubble rounded-tl-[4px] p-3.5 shadow-sm border border-white/5 relative group">
+                        <p class="text-[15px] text-white leading-relaxed">The transfer is complete. I've placed the payload in the secure drop.</p>
+                        <span class="text-[9px] text-eTextMuted absolute bottom-2 right-3 font-mono opacity-0 group-hover:opacity-100 transition-opacity">10:45 AM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Notice - Peer Joined -->
+            <div class="self-center my-1 rounded-full px-3 py-1 bg-black/30 border border-white/5">
+                <span class="text-[10px] font-medium text-eTextMuted"><strong class="text-eOrange">Nova</strong> joined the room via standard invite</span>
+            </div>
+
+            <!-- Incoming Attachment Message -->
+            <div class="flex gap-3 max-w-[85%]">
+                <div class="w-9 h-9 rounded-full bg-eOrange/20 shrink-0 border border-eOrange/30 flex items-center justify-center shadow-sm">
+                    <span class="text-xs font-bold text-eOrange">N</span>
+                </div>
+                <div class="flex flex-col gap-1 items-start">
+                    <span class="text-xs font-bold text-eOrange ml-2 flex items-center gap-1">
+                        Nova
+                        <i class="ph-fill ph-warning-circle text-[10px] text-eTextMuted" title="Unverified"></i>
+                    </span>
+                    
+                    <button class="bg-eCard hover:bg-white-[0.07] transition-colors rounded-bubble rounded-tl-[4px] p-3 shadow-sm border border-white/5 flex items-center gap-3 w-64 text-left">
+                        <div class="w-12 h-12 bg-black/40 rounded-xl flex items-center justify-center shrink-0 border border-white/10 text-ePurple">
+                            <i class="ph-fill ph-file-zip text-2xl"></i>
+                        </div>
+                        <div class="flex flex-col flex-1 overflow-hidden min-w-0">
+                            <span class="text-sm font-semibold text-white truncate w-full">schematics_v2.enc</span>
+                            <span class="text-[11px] text-eTextMuted mt-0.5">Application/Octet-stream</span>
+                            <span class="text-[10px] font-mono text-eTextMuted mt-1">2.4 MB</span>
+                        </div>
+                        <i class="ph-bold ph-download-simple items-center justify-center shrink-0 text-eTextMuted"></i>
+                    </button>
+                    
+                </div>
+            </div>
+
+            <!-- Outgoing Message -->
+            <div class="flex flex-col gap-1 max-w-[80%] self-end items-end">
+                <div class="bg-ePurple rounded-bubble rounded-tr-[4px] p-3.5 shadow-md shadow-ePurple/10 text-white relative group">
+                    <p class="text-[15px] leading-relaxed">Acknowledged. Pulling it down now. Stand by for hash verification.</p>
+                </div>
+                <div class="flex items-center gap-1.5 mr-1">
+                    <span class="text-[9px] font-mono text-eTextMuted">10:48 AM</span>
+                    <i class="ph-bold ph-checks text-[10px] text-white/50"></i>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Composer Fixed Area -->
+        <div class="absolute bottom-10 w-full z-20 bg-eBlack border-t border-white/10 pt-2 pb-4 px-4 bg-eBlack/95 backdrop-blur-xl">
+            <div class="flex items-end gap-2 relative">
+                <button class="w-10 h-[48px] shrink-0 flex items-center justify-center rounded-full text-eTextMuted hover:text-white hover:bg-white/5 transition-colors">
+                    <i class="ph-bold ph-paperclip text-xl"></i>
+                </button>
+                <div class="flex-1 bg-eCard min-h-[48px] max-h-32 rounded-box p-1 pl-4 flex items-center relative border border-white/5 focus-within:border-ePurple/50 transition-colors shadow-inner">
+                    <textarea placeholder="Write a secure message..." class="w-full bg-transparent text-sm text-white placeholder:text-eTextMuted/70 resize-none outline-none max-h-24 py-3 leading-snug no-scrollbar" rows="1"></textarea>
+                    
+                    <button class="w-[40px] h-[40px] shrink-0 bg-ePurple hover:bg-ePurple/90 rounded-full flex items-center justify-center text-white active:scale-95 transition-transform self-end mb-[3px] mr-[3px] shadow-sm">
+                        <i class="ph-fill ph-paper-plane-right text-lg -ml-0.5 mt-0.5"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Micro Status Strip (Bottom Edge) -->
+        <div class="absolute bottom-0 w-full h-10 bg-black flex items-center justify-center gap-4 z-10">
+            <div class="flex items-center gap-1 font-mono text-[9px] text-eTextMuted uppercase">
+                <span class="w-1 h-1 bg-eGreen rounded-full"></span> TCP Socket
+            </div>
+            <div class="flex items-center gap-1 font-mono text-[9px] text-eTextMuted uppercase">
+                <i class="ph-fill ph-network text-[10px]"></i> 14ms
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

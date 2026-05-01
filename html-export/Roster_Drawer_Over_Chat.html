@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epher - Session Roster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        eBlack: '#111111',
+                        ePanel: '#161616',
+                        eCard: '#262626',
+                        eCardHover: '#333333',
+                        ePurple: '#6E54B4',
+                        ePurpleDark: '#4F407A',
+                        eTextMain: '#E8DDF7',
+                        eTextMuted: '#B8AECF',
+                        eTeal: '#2DD4BF',
+                        eGreen: '#4ADE80',
+                        eCoral: '#FB923C',
+                        eRed: '#F87171'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'],
+                    },
+                    borderRadius: {
+                        'btn': '1.25rem',
+                        'box': '1.5rem',
+                        'pill': '9999px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glitch-anim { animation: subtle-glitch 4s infinite alternate; }
+        @keyframes subtle-glitch {
+            0%, 98% { opacity: 1; transform: translate(0, 0); }
+            99% { opacity: 0.8; transform: translate(-1px, 1px); filter: hue-rotate(90deg); }
+            100% { opacity: 1; transform: translate(1px, -1px); }
+        }
+    </style>
+</head>
+<body class="bg-[#000000] flex justify-center items-center h-screen overflow-hidden text-eTextMain font-sans selection:bg-ePurple/30">
+
+    <!-- Main Device Container -->
+    <div class="w-[430px] h-[932px] bg-eBlack relative overflow-hidden shadow-2xl flex flex-col border-x border-white/5">
+        
+        <!-- BACKGROUND LAYER: Muted Chat Screen (Context) -->
+        <div class="absolute inset-0 flex flex-col pointer-events-none filter blur-[1px] opacity-60">
+            <!-- App Bar -->
+            <header class="bg-ePurple h-[100px] pt-[48px] px-4 flex items-center justify-between z-10 shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full text-white/90">
+                        <i class="ph-bold ph-caret-left text-2xl"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-[16px] text-white tracking-wide">Night Shift</span>
+                        <span class="font-mono text-[11px] text-white/70 tracking-widest uppercase">ID: 9X4-F2A</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full text-white bg-black/10">
+                        <i class="ph-fill ph-users text-xl"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Chat Area Dummy -->
+            <main class="flex-1 px-4 py-6 flex flex-col gap-5">
+                <!-- System Notice -->
+                <div class="flex justify-center">
+                    <div class="bg-white/5 border border-white/10 rounded-pill px-4 py-1.5 flex items-center gap-2">
+                        <i class="ph-fill ph-lock-key text-eGreen text-xs"></i>
+                        <span class="text-[11px] text-eTextMuted font-medium uppercase tracking-wider">Session Encrypted</span>
+                    </div>
+                </div>
+                
+                <!-- Received Msg -->
+                <div class="flex flex-col items-start gap-1 max-w-[85%] mt-4">
+                    <span class="text-[11px] text-eTextMuted/70 uppercase tracking-widest ml-4 font-bold">Apex_01 • 14:02</span>
+                    <div class="bg-eCard px-5 py-3.5 rounded-box rounded-tl-sm text-[15px] leading-relaxed relative border border-white/5 shadow-sm text-eTextMain">
+                        Secure connection established. Awaiting coordinates.
+                    </div>
+                </div>
+
+                <!-- Sent Msg -->
+                <div class="flex flex-col items-end gap-1 max-w-[85%] self-end mt-2">
+                    <div class="bg-ePurple px-5 py-3.5 rounded-box rounded-tr-sm text-[15px] leading-relaxed text-white relative shadow-[0_4px_15px_rgba(110,84,180,0.15)]">
+                        Transmitting via secure channel now.
+                    </div>
+                </div>
+            </main>
+
+            <!-- Composer Area Dummy -->
+            <footer class="bg-ePanel p-4 pt-3 border-t border-white/5 pb-8">
+                <div class="bg-eCard h-[56px] rounded-pill border border-transparent flex items-center px-4 gap-3">
+                    <i class="ph ph-paperclip text-eTextMuted text-xl"></i>
+                    <div class="flex-1 text-eTextMuted/50 text-[15px]">Message...</div>
+                    <div class="w-9 h-9 bg-ePurple rounded-full flex items-center justify-center text-white">
+                        <i class="ph-fill ph-paper-plane-right text-sm"></i>
+                    </div>
+                </div>
+            </footer>
+        </div>
+
+        <!-- OVERLAY: Roster Drawer Focus -->
+        <div class="absolute inset-0 z-50 flex flex-col justify-end transition-all duration-300">
+            
+            <!-- Dark Backdrop (Click out to dismiss) -->
+            <button class="absolute inset-0 bg-black/60 backdrop-blur-[3px] w-full cursor-default active:bg-black/60 outline-none" aria-label="Close modal"></button>
+
+            <!-- Bottom Drawer Panel -->
+            <div class="relative bg-[#161616] w-full h-[82%] rounded-t-[32px] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] flex flex-col border-t border-white/5 translate-y-0 transform transition-transform">
+                
+                <!-- Drag Handle Area -->
+                <div class="w-full h-10 flex justify-center items-center shrink-0">
+                    <div class="w-12 h-1.5 bg-white/10 rounded-full"></div>
+                </div>
+
+                <!-- Drawer Header -->
+                <div class="px-6 pb-5 flex justify-between items-start shrink-0 relative z-10">
+                    <div class="flex flex-col gap-1">
+                        <h2 class="text-eTextMain font-bold text-[11px] tracking-[0.2em] uppercase text-ePurple glitch-anim">Session Ledger</h2>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            <span class="text-[22px] font-bold tracking-tight text-white leading-none">Night Shift</span>
+                        </div>
+                        <div class="flex items-center gap-2 mt-2">
+                            <div class="flex items-center gap-1.5 bg-eCard px-2.5 py-1 rounded-pill border border-white/5">
+                                <span class="relative flex h-2 w-2">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-ePurple opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2 w-2 bg-ePurple"></span>
+                                </span>
+                                <span class="text-[10px] uppercase tracking-wider font-semibold text-eTextMuted">3 Active</span>
+                            </div>
+                            <div class="flex items-center gap-1.5 bg-eGreen/10 px-2.5 py-1 rounded-pill border border-eGreen/20">
+                                <i class="ph-fill ph-shield-check text-eGreen text-[10px]"></i>
+                                <span class="text-[10px] uppercase tracking-wider font-semibold text-eGreen">2 Verified</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="w-9 h-9 bg-eCard hover:bg-white/10 flex items-center justify-center rounded-full text-eTextMuted transition-colors">
+                        <i class="ph-bold ph-x text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Scrollable Participant List -->
+                <div class="flex-1 overflow-y-auto px-4 pb-12 pt-2 flex flex-col gap-3 no-scrollbar relative z-0">
+                    
+                    <!-- Structural Label -->
+                    <div class="pl-4 pb-1">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-eTextMuted/50">Local Identity</span>
+                    </div>
+
+                    <!-- Participant Card: LOCAL USER -->
+                    <div class="bg-[#262626] rounded-[24px] p-4 flex items-center gap-4 relative overflow-hidden group border border-transparent shadow-sm">
+                        <!-- Accent Sidebar Indicator -->
+                        <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1/2 w-1.5 bg-eTeal rounded-r-pill opacity-80"></div>
+                        
+                        <!-- Avatar -->
+                        <div class="w-[52px] h-[52px] rounded-full bg-[#1A3A36] border border-eTeal/30 flex items-center justify-center shrink-0 relative">
+                            <i class="ph-fill ph-user-focus text-[24px] text-eTeal"></i>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-ePanel rounded-full flex items-center justify-center">
+                                <div class="w-2.5 h-2.5 bg-eGreen rounded-full relative">
+                                    <div class="absolute inset-0 bg-eGreen rounded-full animate-ping opacity-40"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col justify-center min-w-0 pr-2">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-[16px] text-white truncate">Cipher <span class="text-eTextMuted/50 font-normal">(You)</span></span>
+                                <i class="ph-fill ph-shield-check text-eGreen text-[14px]" title="Self Authenticated"></i>
+                            </div>
+                            <!-- Fingerprint Row -->
+                            <div class="flex items-center gap-1.5">
+                                <i class="ph-fill ph-fingerprint text-eTextMuted/40 text-xs"></i>
+                                <span class="font-mono text-[11px] text-eTextMuted/80 tracking-widest truncate mt-[1px]">F9A2 • 4C8B • 910X</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Structural Label -->
+                    <div class="pl-4 pt-3 pb-1 flex justify-between items-center">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-eTextMuted/50">Remote Peers</span>
+                    </div>
+
+                    <!-- Participant Card: OWNER / VERIFIED -->
+                    <div class="bg-[#262626] rounded-[24px] p-4 flex items-center gap-4 relative overflow-hidden border border-white/5 active:scale-[0.98] transition-all">
+                        
+                        <!-- Avatar -->
+                        <div class="w-[52px] h-[52px] rounded-full bg-ePurple/15 border border-ePurple/30 flex items-center justify-center shrink-0 relative">
+                            <i class="ph-fill ph-user text-[24px] text-[#A68AE8]"></i>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-ePanel rounded-full flex items-center justify-center z-10">
+                                <div class="w-2.5 h-2.5 bg-eGreen rounded-full relative"></div>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col justify-center min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-[16px] text-white truncate">Apex_01</span>
+                                <div class="bg-ePurple/20 text-eTextMain px-2 py-[2px] rounded-sm text-[9px] uppercase tracking-wider font-bold h-[16px] flex items-center">Owner</div>
+                                <i class="ph-fill ph-shield-check text-eGreen text-[14px]"></i>
+                            </div>
+                            <!-- Fingerprint Row -->
+                            <div class="flex items-center gap-1.5">
+                                <i class="ph-fill ph-fingerprint text-eTextMuted/40 text-xs"></i>
+                                <span class="font-mono text-[11px] text-eTextMuted/80 tracking-widest truncate mt-[1px]">3D71 • B2FA • 009Y</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Context Action -->
+                        <button class="w-10 h-10 flex items-center justify-center rounded-full text-eTextMuted/50 hover:text-white hover:bg-white/10 shrink-0">
+                            <i class="ph-bold ph-dots-three-vertical text-xl"></i>
+                        </button>
+                    </div>
+
+                    <!-- Participant Card: UNVERIFIED -->
+                    <div class="bg-[#262626] rounded-[24px] p-4 flex items-center gap-4 relative overflow-hidden border border-white/5 active:scale-[0.98] transition-all">
+                        
+                        <!-- Avatar -->
+                        <div class="w-[52px] h-[52px] rounded-full bg-white/5 border border-white/10 flex items-center justify-center shrink-0 relative">
+                            <i class="ph-fill ph-ghost text-[24px] text-eTextMuted"></i>
+                            <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-ePanel rounded-full flex items-center justify-center z-10">
+                                <div class="w-2.5 h-2.5 bg-eGreen rounded-full relative"></div>
+                            </div>
+                        </div>
+
+                        <!-- Info -->
+                        <div class="flex-1 flex flex-col justify-center min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-bold text-[16px] text-white truncate">Null_Sector</span>
+                                <i class="ph-fill ph-warning-circle text-eCoral text-[14px]" title="Identity Unverified"></i>
+                            </div>
+                            <!-- Fingerprint Row -->
+                            <div class="flex items-center gap-1.5">
+                                <i class="ph-fill ph-fingerprint text-eCoral/60 text-xs"></i>
+                                <span class="font-mono text-[11px] text-eTextMuted/60 tracking-widest truncate mt-[1px]">77C9 • 11AA • ????</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <button class="bg-[#333333] hover:bg-ePurple/20 hover:text-ePurple border border-transparent hover:border-ePurple/30 h-8 px-4 rounded-full text-[11px] font-bold uppercase tracking-wider text-white transition-colors shrink-0 flex items-center shadow-inner">
+                            Verify
+                        </button>
+                    </div>
+
+                    <!-- Informational Footer inside list -->
+                    <div class="mt-6 flex flex-col items-center justify-center px-6 text-center gap-2 opacity-50">
+                        <i class="ph ph-info text-2xl text-eTextMuted"></i>
+                        <p class="text-[11px] text-eTextMuted leading-relaxed">
+                            Peer fingerprints represent ephemeral session keys. Verifying out-of-band ensures protection against man-in-the-middle interception.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Fixed Bottom Safe Area Gradient (for visual cutoff) -->
+                <div class="absolute bottom-0 w-full h-8 bg-gradient-to-t from-[#161616] to-transparent pointer-events-none z-10 rounded-b-[32px]"></div>
+
+            </div>
+        </div>
+
+        <!-- System Bottom Status Strip (Part of Chat context, sits under overlay) -->
+        <div class="absolute bottom-0 w-full h-[6px] flex pointer-events-none z-0">
+            <div class="h-full flex-1 bg-eGreen shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
+            <div class="h-full flex-1 bg-ePurple shadow-[0_0_10px_rgba(110,84,180,0.5)]"></div>
+            <div class="h-full flex-1 bg-ePurple shadow-[0_0_10px_rgba(110,84,180,0.5)]"></div>
+        </div>
+    </div>
+</body>
+</html>

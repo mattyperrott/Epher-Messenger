@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "name": "epher-runtime",
+  "version": "0.1.0",
+  "description": "Local mix-relay dev services for Epher",
+  "scripts": {
+    "start:mixnet": "node scripts/dev-mixnet-relay.js"
+  },
+  "dependencies": {
+    "hyperdht": "^6.29.3",
+    "hyperswarm": "^4.17.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "bare-link": "^3.2.1",
+    "bare-pack": "^2.0.1"
+  }
+}

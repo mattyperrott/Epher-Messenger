@@ -1,0 +1,30 @@
+# macOS system files
+.DS_Store
+**/.DS_Store
+__MACOSX/
+**/__MACOSX/
+
+# App build directory
+/app/build/
+
+# All build folders and contents
+/build/
+/build/**
+
+# Signing directory
+/signing/
+/signing/**
+
+# Temporary folders
+/tmp/
+/tmp/**
+
+.tmp/
+.tmp/**
+
+# Gradle & Kotlin caches
+.gradle/
+.gradle/**
+
+.kotlin/
+.kotlin/**

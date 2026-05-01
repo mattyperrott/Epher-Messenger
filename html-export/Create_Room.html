@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epher - Create Room</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        eBlack: '#111111',
+                        ePanel: '#161616',
+                        eCard: '#262626',
+                        ePurple: '#6E54B4',
+                        ePurpleMuted: '#4F407A',
+                        eTextMain: '#E8DDF7',
+                        eTextMuted: '#B8AECF',
+                    },
+                    borderRadius: {
+                        'box': '1.5rem',
+                        'btn': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-black flex items-center justify-center min-h-screen">
+    <div class="w-[430px] h-[932px] bg-eBlack text-eTextMain relative overflow-hidden flex flex-col font-sans ring-1 ring-white/10 shadow-2xl">
+        
+        <!-- Top App Bar -->
+        <header class="bg-ePurple h-[100px] pt-[48px] px-2 flex items-center z-10 shrink-0 border-b border-black/20 shadow-md">
+            <button class="w-12 h-12 flex items-center justify-center rounded-full text-white/90 hover:bg-black/10 active:bg-black/20 transition-colors">
+                <i class="ph-bold ph-caret-left text-2xl"></i>
+            </button>
+            <h1 class="font-bold text-sm tracking-widest text-white uppercase ml-1 flex-1">Generate Room</h1>
+            <div class="w-12"></div> <!-- Spacer for centering -->
+        </header>
+
+        <!-- Main Content (Form) -->
+        <main class="flex-1 overflow-y-auto no-scrollbar p-5 pb-32 flex flex-col gap-8">
+            
+            <p class="text-eTextMuted text-sm leading-relaxed px-1">
+                Establish a new encrypted instance. A secure keypair will be generated solely for this session.
+            </p>
+
+            <!-- Room Label Input -->
+            <section class="flex flex-col gap-2 relative">
+                <label class="text-[10px] uppercase font-bold tracking-widest text-eTextMuted pl-4">Room Label</label>
+                <div class="relative">
+                    <input type="text" value="Signal Pod" class="w-full h-16 bg-eCard rounded-btn pl-6 pr-16 text-lg font-medium text-white border-2 border-transparent focus:border-ePurple outline-none transition-colors shadow-inner shadow-black/20">
+                    <button class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-eTextMuted hover:text-white hover:bg-white/5 transition-colors">
+                        <i class="ph-bold ph-arrows-clockwise text-xl"></i>
+                    </button>
+                </div>
+                <p class="text-[11px] text-eTextMuted/70 pl-4 mt-1">Local alias. Not transmitted to peers.</p>
+            </section>
+
+            <!-- Retention Preset -->
+            <section class="flex flex-col gap-3">
+                <label class="text-[10px] uppercase font-bold tracking-widest text-eTextMuted pl-4">Retention Preset</label>
+                
+                <div class="flex flex-col gap-2">
+                    <!-- Option 1: Selected -->
+                    <label class="bg-ePurple/10 border-2 border-ePurple rounded-box p-4 flex items-start gap-4 cursor-pointer relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-ePurple/20 blur-3xl rounded-full"></div>
+                        <div class="w-6 h-6 rounded-full border-2 border-ePurple flex items-center justify-center shrink-0 mt-0.5 bg-ePurple">
+                            <i class="ph-bold ph-circle-fill text-[8px] text-white"></i>
+                        </div>
+                        <div>
+                            <span class="block text-white font-semibold text-base mb-1">Ephemeral Shift</span>
+                            <span class="block text-xs text-eTextMuted leading-snug">Wipe all data 1 hour after total peer disconnect. Perfect for quick syncs.</span>
+                        </div>
+                    </label>
+
+                    <!-- Option 2: Default -->
+                    <label class="bg-eCard border-2 border-transparent rounded-box p-4 flex items-start gap-4 cursor-pointer opacity-80 hover:opacity-100 transition-opacity">
+                        <div class="w-6 h-6 rounded-full border-2 border-eTextMuted flex items-center justify-center shrink-0 mt-0.5"></div>
+                        <div>
+                            <span class="block text-white font-semibold text-base mb-1">Standard Persistent</span>
+                            <span class="block text-xs text-eTextMuted leading-snug">Data cached on devices until manual wipe. Logs kept locally.</span>
+                        </div>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Invite Liveness -->
+            <section class="flex flex-col gap-3">
+                <label class="text-[10px] uppercase font-bold tracking-widest text-eTextMuted pl-4">Invite Link Liveness</label>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="bg-eCard border-2 border-transparent hover:border-white/10 h-14 rounded-btn text-sm font-medium text-eTextMain transition-colors">1 Hour</button>
+                    <button class="bg-ePurple/10 border-2 border-ePurple text-white h-14 rounded-btn text-sm font-semibold transition-colors shadow-[0_0_15px_rgba(110,84,180,0.15)]">24 Hours</button>
+                    <button class="bg-eCard border-2 border-transparent hover:border-white/10 h-14 rounded-btn text-sm font-medium text-eTextMain transition-colors">7 Days</button>
+                    <button class="bg-eCard border-2 border-transparent hover:border-white/10 h-14 rounded-btn text-sm font-medium text-eTextMain transition-colors text-eTextMuted flex items-center justify-center gap-1">
+                        <i class="ph ph-infinity"></i> No Expiry
+                    </button>
+                </div>
+            </section>
+            
+        </main>
+
+        <!-- Bottom Action fixed -->
+        <div class="absolute bottom-0 w-full p-5 bg-gradient-to-t from-eBlack via-eBlack to-transparent pt-10 z-20 pb-12">
+            <button class="w-full bg-ePurple hover:bg-ePurple/90 active:bg-ePurpleMuted text-white rounded-btn h-14 font-semibold text-lg flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(110,84,180,0.3)] transition-all">
+                INITIALIZE
+                <i class="ph-bold ph-arrow-right"></i>
+            </button>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epher - Room Safety</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Roboto Mono', 'monospace'] 
+                    },
+                    colors: {
+                        eBlack: '#111111',
+                        ePanel: '#161616',
+                        eCard: '#262626',
+                        ePurple: '#6E54B4',
+                        eTextMain: '#E8DDF7',
+                        eTextMuted: '#B8AECF',
+                        eRed: '#F87171',
+                    },
+                    borderRadius: {
+                        'box': '1.5rem',
+                        'btn': '1.25rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-black flex items-center justify-center min-h-screen">
+    <div class="w-[430px] h-[932px] bg-eBlack text-eTextMain relative overflow-hidden flex flex-col font-sans ring-1 ring-white/10 shadow-2xl">
+        
+        <!-- Top App Bar -->
+        <header class="bg-ePurple h-[100px] pt-[48px] px-2 flex items-center z-10 shrink-0">
+            <button class="w-12 h-12 flex items-center justify-center rounded-full text-white/90 hover:bg-black/10 active:bg-black/20">
+                <i class="ph-bold ph-caret-left text-2xl"></i>
+            </button>
+            <h1 class="font-bold text-sm tracking-widest text-white uppercase ml-1 flex-1">Night Shift Audit</h1>
+            <div class="w-12"></div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto no-scrollbar p-5 pb-24 flex flex-col gap-6">
+
+            <div class="mb-2">
+                <p class="text-eTextMuted text-sm leading-relaxed mb-6">
+                    Cryptographic parameters and trust metrics for the current session. Review carefully.
+                </p>
+
+                <div class="flex gap-3 mb-4">
+                    <button class="flex-1 bg-eCard hover:bg-white/10 active:bg-white/5 text-white h-12 rounded-btn font-semibold text-sm flex items-center justify-center gap-2 transition-colors border border-white/5">
+                        <i class="ph-bold ph-copy text-lg text-eTextMuted"></i>
+                        COPY INVITE
+                    </button>
+                    <button class="flex-1 bg-eCard hover:bg-white/10 active:bg-white/5 text-white h-12 rounded-btn font-semibold text-sm flex items-center justify-center gap-2 transition-colors border border-white/5">
+                        <i class="ph-bold ph-share-network text-lg text-eTextMuted"></i>
+                        SHARE
+                    </button>
+                </div>
+
+                <button class="w-full bg-red-950/40 border border-eRed/30 hover:bg-red-950/60 active:bg-red-900/50 text-eRed h-14 rounded-btn font-bold tracking-wide text-sm flex items-center justify-center gap-2 transition-colors mt-2">
+                    <i class="ph-bold ph-warning-octagon text-lg"></i>
+                    LEAVE & WIPE NOW
+                </button>
+            </div>
+
+            <!-- Metadata List -->
+            <div class="bg-eCard rounded-box overflow-hidden border border-white/5 flex flex-col shadow-lg">
+                <div class="bg-black/20 px-4 py-3 border-b border-white/5 flex items-center gap-2">
+                    <i class="ph-fill ph-fingerprint text-eTextMuted"></i>
+                    <h3 class="text-[10px] uppercase font-bold tracking-widest text-eTextMuted">Identity & Access</h3>
+                </div>
+                
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Room ID</span>
+                    <span class="text-sm font-mono text-white">9X4-F2A</span>
+                </div>
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Local Fingerprint</span>
+                    <span class="text-xs font-mono text-white/80 max-w-[60%] truncate">4a3b..99f2</span>
+                </div>
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Owner Fingerprint</span>
+                    <span class="text-xs font-mono text-eTeal max-w-[60%] truncate">e71c..22a1</span>
+                </div>
+                <div class="px-4 py-3.5 border-b border-white/5 flex flex-col gap-1">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-eTextMuted font-medium">Active Invite Token</span>
+                    </div>
+                    <span class="text-xs font-mono text-white/60 w-full truncate bg-black/30 p-2 rounded block">eph://join?t=eyJo...92kz3jd#L</span>
+                </div>
+                 <div class="flex justify-between items-center px-4 py-3.5">
+                    <span class="text-xs text-eTextMuted font-medium">Invite Validity</span>
+                    <span class="text-xs font-mono text-eTextMain bg-white/5 px-2 py-0.5 rounded">Expires 14h 22m</span>
+                </div>
+            </div>
+
+            <div class="bg-eCard rounded-box overflow-hidden border border-white/5 flex flex-col shadow-lg">
+                <div class="bg-black/20 px-4 py-3 border-b border-white/5 flex items-center gap-2">
+                    <i class="ph-fill ph-lock-key text-eTextMuted"></i>
+                    <h3 class="text-[10px] uppercase font-bold tracking-widest text-eTextMuted">Protocol Parameters</h3>
+                </div>
+                
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Transport Layer</span>
+                    <span class="text-xs font-mono text-white">WSS Standard</span>
+                </div>
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Message Cipher</span>
+                    <span class="text-xs font-mono text-white">AES-256-GCM</span>
+                </div>
+                <div class="flex justify-between items-center px-4 py-3.5 border-b border-white/5">
+                    <span class="text-xs text-eTextMuted font-medium">Forward Secrecy</span>
+                    <span class="text-xs font-mono text-green-400 font-bold">ACTIVE (Double Ratchet)</span>
+                </div>
+                <div class="flex justify-between items-center px-4 py-3.5">
+                    <span class="text-xs text-eTextMuted font-medium">Traffic Obfuscation</span>
+                    <span class="text-xs font-mono text-eTextMuted opacity-60">DISABLED</span>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Bottom Status Strip -->
+        <div class="absolute bottom-0 w-full h-[40px] bg-ePanel border-t border-white/5 flex items-center justify-center gap-4 z-20">
+            <span class="text-[9px] uppercase font-mono tracking-widest text-white/30">Read-Only View</span>
+        </div>
+
+    </div>
+</body>
+</html>
