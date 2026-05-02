@@ -28,6 +28,10 @@
 # ============================================
 # BareKit (Hyperswarm Bare runtime)
 -keep class com.holepunch.** { *; }
+-keep class to.holepunch.** { *; }
+-keep class to.holepunch.bare.kit.** { *; }
+-keepnames class to.holepunch.** { *; }
+-dontwarn com.google.firebase.messaging.**
 -keepclasseswithmembernames class * {
     native <methods>;
 }

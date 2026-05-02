@@ -299,20 +299,21 @@ fun BottomStatusStrip(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.Black.copy(alpha = 0.96f))
+            .background(InkPanel.copy(alpha = 0.96f))
             .navigationBarsPadding(),
     ) {
         HorizontalDivider(color = Color.White.copy(alpha = 0.08f))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 50.dp, top = 9.dp, end = 50.dp, bottom = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                .height(44.dp)
+                .padding(horizontal = 18.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(9.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            SessionStatusChip(indicator = indicators.connected, modifier = Modifier.weight(1f))
-            SessionStatusChip(indicator = indicators.verified, modifier = Modifier.weight(1f))
-            SessionStatusChip(indicator = indicators.encrypted, modifier = Modifier.weight(1f))
+            SessionStatusChip(indicator = indicators.connected)
+            SessionStatusChip(indicator = indicators.verified)
+            SessionStatusChip(indicator = indicators.encrypted)
             if (onToggleExpanded != null) {
                 IconButton(
                     onClick = onToggleExpanded,
@@ -347,9 +348,9 @@ private fun SessionStatusChip(
     )
     val state = indicator.state
     val containerColor = when (state) {
-        SessionIndicatorState.Active -> Color(0xFF171319)
+        SessionIndicatorState.Active -> Color.Black.copy(alpha = 0.40f)
         SessionIndicatorState.Loading -> ChromePurple.copy(alpha = loadingAlpha)
-        SessionIndicatorState.Inactive -> Color(0xFF151515)
+        SessionIndicatorState.Inactive -> Color.Black.copy(alpha = 0.26f)
     }
     val iconColor = when (state) {
         SessionIndicatorState.Active -> when (indicator.label.lowercase()) {
@@ -378,7 +379,7 @@ private fun SessionStatusChip(
         Row(
             modifier = Modifier
                 .heightIn(min = 24.dp)
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+                .padding(horizontal = 10.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
