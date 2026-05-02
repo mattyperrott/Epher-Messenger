@@ -10,7 +10,7 @@ data class RoomSecurityProfile(
     val forwardSecrecy: String = "Pairwise ratchet per verified peer",
     val trafficObfuscation: String = "Depends on configured transport",
     val metadataRetention: String = "No central plaintext message storage; encrypted local session state",
-    val groupKeyPolicy: String = "Static room secret in current build; member rekey not implemented",
+    val groupKeyPolicy: String = "Owner removal rotates future room traffic to a new room epoch",
     val transportMode: String = "Transport depends on configured build",
     val overlayMode: String = "No overlay tunnel in current build",
     val fileSharing: String = "Experimental encrypted attachments (not part of canonical v1)",

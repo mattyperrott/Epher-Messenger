@@ -248,7 +248,7 @@ class PairwiseProtocolService(
     ): PairwiseEnvelope {
         val session = ensureSession(roomId, recipientFingerprint)
         val identity = roomIdentityManager.identityForRoom(roomId)
-        maybeAdvanceSendingRatchet(roomId, session)
+        maybeAdvanceSendingRatchet(session)
 
         // Snapshot current state before any mutations
         val currentSendCount = session.sendCount
@@ -404,7 +404,7 @@ class PairwiseProtocolService(
         val messageKey = if (skipped != null) {
             skipped.key
         } else {
-            maybeAdvanceReceivingRatchet(roomId, session, envelope.ratchetPublicKey, envelope.previousChainLength)
+            maybeAdvanceReceivingRatchet(session, envelope.ratchetPublicKey, envelope.previousChainLength)
             while (session.receiveCount < envelope.messageNumber) {
                 val skippedKey = hkdfSha256(
                     ikm = session.receiveChainKey,
@@ -510,12 +510,8 @@ class PairwiseProtocolService(
         return session
     }
 
-    private fun maybeAdvanceSendingRatchet(
-        roomId: String,
-        session: PairwiseSession,
-    ) {
+    private fun maybeAdvanceSendingRatchet(session: PairwiseSession) {
         if (!session.needsSendRatchet) return
-        val keyMaterial = secureRoomService.pairwiseKeyMaterial(roomId)
         val nextPrivate = X25519.generatePrivateKey()
         val nextPublic = X25519.publicFromPrivate(nextPrivate)
         val nextRoot = hkdfSha256(
@@ -526,7 +522,7 @@ class PairwiseProtocolService(
         )
         session.previousChainLength = session.sendCount
         session.rootKey = nextRoot
-        session.sendChainKey = hkdfSha256(nextRoot, keyMaterial.masterKey, utf8("epher.pairwise.dh.chain"), 32)
+        session.sendChainKey = hkdfSha256(nextRoot, nextRoot, utf8("epher.pairwise.dh.chain"), 32)
         session.sendCount = 0
         session.localRatchetPrivateKey = nextPrivate
         session.localRatchetPublicKey = nextPublic
@@ -534,13 +530,11 @@ class PairwiseProtocolService(
     }
 
     private fun maybeAdvanceReceivingRatchet(
-        roomId: String,
         session: PairwiseSession,
         remoteRatchetPublicKey: ByteArray,
         previousChainLength: Int,
     ) {
         if (constantTimeEquals(session.remoteRatchetPublicKey, remoteRatchetPublicKey)) return
-        val keyMaterial = secureRoomService.pairwiseKeyMaterial(roomId)
         val nextRoot = hkdfSha256(
             ikm = X25519.computeSharedSecret(session.localRatchetPrivateKey, remoteRatchetPublicKey),
             salt = session.rootKey,
@@ -548,7 +542,7 @@ class PairwiseProtocolService(
             length = 32,
         )
         session.rootKey = nextRoot
-        session.receiveChainKey = hkdfSha256(nextRoot, keyMaterial.masterKey, utf8("epher.pairwise.dh.chain"), 32)
+        session.receiveChainKey = hkdfSha256(nextRoot, nextRoot, utf8("epher.pairwise.dh.chain"), 32)
         session.remoteRatchetPublicKey = remoteRatchetPublicKey
         session.receiveCount = 0
         session.previousChainLength = previousChainLength

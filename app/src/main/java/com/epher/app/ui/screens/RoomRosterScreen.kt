@@ -14,6 +14,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +24,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +59,7 @@ fun RoomRosterScreen(
     onBack: () -> Unit,
 ) {
     val indicators = sessionIndicators(room, participants)
+    var pendingRemoval by remember { mutableStateOf<Participant?>(null) }
     EpherBackdrop {
         Column(modifier = Modifier.fillMaxSize()) {
             EpherTopChrome(
@@ -177,7 +184,7 @@ fun RoomRosterScreen(
                                     )
                                     if (canRemove) {
                                         TextButton(
-                                            onClick = { onRemoveParticipant(participant.fingerprint) },
+                                            onClick = { pendingRemoval = participant },
                                             modifier = Modifier.align(Alignment.End),
                                         ) {
                                             Text(
@@ -194,6 +201,41 @@ fun RoomRosterScreen(
                 }
             }
             BottomStatusStrip(indicators = indicators)
+        }
+
+        pendingRemoval?.let { participant ->
+            AlertDialog(
+                onDismissRequest = { pendingRemoval = null },
+                title = {
+                    Text(
+                        text = "Remove ${participant.displayName}?",
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                },
+                text = {
+                    Text(
+                        text = "This rotates the room to a new epoch and stops sending future room keys to this participant. It cannot revoke messages or files they already received.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            pendingRemoval = null
+                            onRemoveParticipant(participant.fingerprint)
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = AlertRed),
+                    ) {
+                        Text("REMOVE AND REKEY")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { pendingRemoval = null }) {
+                        Text("CANCEL")
+                    }
+                },
+                containerColor = InkCard,
+            )
         }
     }
 }

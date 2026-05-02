@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ADB_BIN="${ADB_BIN:-adb}"
-APK_PATH="${1:-$(pwd)/app/build/outputs/apk/debug/app-debug.apk}"
+APK_PATH="${1:-$(pwd)/app/build/outputs/apk/debug/app-arm64-v8a-debug.apk}"
 
 if [[ ! -f "$APK_PATH" ]]; then
   echo "APK not found at $APK_PATH" >&2

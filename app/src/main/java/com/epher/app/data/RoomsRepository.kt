@@ -473,8 +473,31 @@ class RoomsRepository(
             require(room.isOwner) { "Only the room owner can remove participants" }
             val localFingerprint = roomSecurity.roomFingerprint(roomId)
             require(fingerprint != localFingerprint) { "Use Leave Room to remove your local device" }
-            val participant = participants(roomId).firstOrNull { it.fingerprint == fingerprint } ?: return@launch
+            val roomParticipants = participants(roomId)
+            val participant = roomParticipants.firstOrNull { it.fingerprint == fingerprint } ?: return@launch
             if (participant.isRemoved) return@launch
+            val offlineRemainingPeers = roomParticipants
+                .filter { it.transportPublicKeyHex != null }
+                .filterNot { it.isRemoved }
+                .filterNot { it.fingerprint == fingerprint }
+                .filterNot { it.isOnline }
+            if (offlineRemainingPeers.isNotEmpty()) {
+                updateSnapshot { snapshot ->
+                    snapshot.copy(
+                        logs = appendLog(
+                            snapshot.logs,
+                            roomId,
+                            "SECURITY >> removal blocked: ${offlineRemainingPeers.size} remaining peer(s) are offline and would miss the rekey",
+                        ),
+                        messages = appendSystemMessage(
+                            snapshot.messages,
+                            roomId,
+                            "Removal blocked. All remaining peers must be online before a room rekey in this direct P2P build.",
+                        ),
+                    )
+                }
+                return@launch
+            }
 
             val remainingPeerFingerprints = pairwiseProtocol.verifiedPeers(roomId)
                 .map { it.fingerprint }
@@ -544,8 +567,10 @@ class RoomsRepository(
                 )
             }
 
-            refreshRoomTransport(room(roomId) ?: return@launch)
+            // Send the owner rekey control over the existing transport registration
+            // before switching the local engine to the new room topic.
             flushPendingOutbound(roomId, "room rekey")
+            refreshRoomTransport(room(roomId) ?: return@launch)
         }
     }
 

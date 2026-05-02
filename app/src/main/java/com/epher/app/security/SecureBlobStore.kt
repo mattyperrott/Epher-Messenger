@@ -10,9 +10,12 @@ import javax.crypto.SecretKey
 
 class SecureBlobStore(
     context: Context,
+    namespace: String = "",
 ) {
     private val appContext = context.applicationContext
-    private val prefs = appContext.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
+    private val storeName = if (namespace.isBlank()) STORE_NAME else "$STORE_NAME.$namespace"
+    private val keyAlias = if (namespace.isBlank()) KEY_ALIAS else "$KEY_ALIAS.$namespace"
+    private val prefs = appContext.getSharedPreferences(storeName, Context.MODE_PRIVATE)
     private val secretKey: SecretKey by lazy(::loadOrCreateSecretKey)
 
     fun putString(key: String, value: String) {
@@ -51,7 +54,7 @@ class SecureBlobStore(
 
     private fun loadOrCreateSecretKey(): SecretKey {
         val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
-        val existing = keyStore.getKey(KEY_ALIAS, null) as? SecretKey
+        val existing = keyStore.getKey(keyAlias, null) as? SecretKey
         if (existing != null) {
             return existing
         }
@@ -60,7 +63,7 @@ class SecureBlobStore(
             KEYSTORE_PROVIDER,
         )
         val spec = KeyGenParameterSpec.Builder(
-            KEY_ALIAS,
+            keyAlias,
             KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
         )
             .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
