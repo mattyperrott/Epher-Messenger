@@ -25,6 +25,8 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -60,7 +62,6 @@ import com.epher.app.ui.theme.ChromePurpleSoft
 import com.epher.app.ui.theme.DuneSand
 import com.epher.app.ui.theme.InkCard
 import com.epher.app.ui.theme.InkPanel
-import com.epher.app.ui.theme.LogPanel
 import com.epher.app.ui.theme.EmberCoral
 import com.epher.app.ui.theme.NightInk
 import com.epher.app.ui.theme.TideTeal
@@ -295,29 +296,35 @@ fun BottomStatusStrip(
     expanded: Boolean = false,
     onToggleExpanded: (() -> Unit)? = null,
 ) {
-    Row(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(LogPanel, RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp))
-            .navigationBarsPadding()
-            .padding(start = 12.dp, top = 8.dp, end = 12.dp, bottom = 3.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+            .background(Color.Black.copy(alpha = 0.96f))
+            .navigationBarsPadding(),
     ) {
-        SessionStatusChip(indicator = indicators.connected, modifier = Modifier.weight(1f))
-        SessionStatusChip(indicator = indicators.verified, modifier = Modifier.weight(1f))
-        SessionStatusChip(indicator = indicators.encrypted, modifier = Modifier.weight(1f))
-        if (onToggleExpanded != null) {
-            IconButton(
-                onClick = onToggleExpanded,
-                modifier = Modifier.size(36.dp),
-            ) {
-                Icon(
-                    imageVector = if (expanded) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.KeyboardArrowUp,
-                    contentDescription = "Toggle panel",
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(24.dp),
-                )
+        HorizontalDivider(color = Color.White.copy(alpha = 0.08f))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 50.dp, top = 9.dp, end = 50.dp, bottom = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SessionStatusChip(indicator = indicators.connected, modifier = Modifier.weight(1f))
+            SessionStatusChip(indicator = indicators.verified, modifier = Modifier.weight(1f))
+            SessionStatusChip(indicator = indicators.encrypted, modifier = Modifier.weight(1f))
+            if (onToggleExpanded != null) {
+                IconButton(
+                    onClick = onToggleExpanded,
+                    modifier = Modifier.size(30.dp),
+                ) {
+                    Icon(
+                        imageVector = if (expanded) Icons.Rounded.KeyboardArrowDown else Icons.Rounded.KeyboardArrowUp,
+                        contentDescription = "Toggle panel",
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
         }
     }
@@ -340,14 +347,20 @@ private fun SessionStatusChip(
     )
     val state = indicator.state
     val containerColor = when (state) {
-        SessionIndicatorState.Active -> ChromePurple.copy(alpha = 0.22f)
+        SessionIndicatorState.Active -> Color(0xFF171319)
         SessionIndicatorState.Loading -> ChromePurple.copy(alpha = loadingAlpha)
-        SessionIndicatorState.Inactive -> ChromePurpleDark
+        SessionIndicatorState.Inactive -> Color(0xFF151515)
     }
-    val dotColor = when (state) {
-        SessionIndicatorState.Active -> ChromePurpleSoft
+    val iconColor = when (state) {
+        SessionIndicatorState.Active -> when (indicator.label.lowercase()) {
+            "connected" -> Color(0xFF4ADE80)
+            "verified" -> TideTeal
+            "encrypted" -> ChromePurpleSoft
+            else -> ChromePurpleSoft
+        }
+
         SessionIndicatorState.Loading -> ChromePurpleSoft.copy(alpha = 0.88f)
-        SessionIndicatorState.Inactive -> InkCard
+        SessionIndicatorState.Inactive -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.48f)
     }
     val textAlpha = when (state) {
         SessionIndicatorState.Active -> 1f
@@ -360,35 +373,47 @@ private fun SessionStatusChip(
         color = containerColor,
         shape = RoundedCornerShape(999.dp),
         tonalElevation = 0.dp,
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.White.copy(alpha = 0.04f)),
     ) {
         Row(
             modifier = Modifier
-                .heightIn(min = 38.dp)
-                .padding(horizontal = 10.dp, vertical = 6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                .heightIn(min = 24.dp)
+                .padding(horizontal = 8.dp, vertical = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
-                    .size(16.dp)
-                    .clip(CircleShape)
-                    .background(dotColor),
+                    .size(10.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 when (state) {
                     SessionIndicatorState.Active -> {
-                        Icon(
-                            imageVector = Icons.Rounded.Check,
-                            contentDescription = null,
-                            tint = DuneSand,
-                            modifier = Modifier.size(13.dp),
-                        )
+                        if (indicator.label.equals("Connected", ignoreCase = true)) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(iconColor),
+                            )
+                        } else {
+                            Icon(
+                                imageVector = if (indicator.label.equals("Encrypted", ignoreCase = true)) {
+                                    Icons.Rounded.Lock
+                                } else {
+                                    Icons.Rounded.Shield
+                                },
+                                contentDescription = null,
+                                tint = iconColor,
+                                modifier = Modifier.size(10.dp),
+                            )
+                        }
                     }
 
                     SessionIndicatorState.Loading -> {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(12.dp),
-                            strokeWidth = 1.6.dp,
+                            modifier = Modifier.size(10.dp),
+                            strokeWidth = 1.3.dp,
                             color = DuneSand,
                             trackColor = Color.Transparent,
                         )
@@ -398,15 +423,19 @@ private fun SessionStatusChip(
                         Icon(
                             imageVector = Icons.Rounded.Close,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                            modifier = Modifier.size(13.dp),
+                            tint = iconColor,
+                            modifier = Modifier.size(10.dp),
                         )
                     }
                 }
             }
             Text(
                 text = indicator.label,
-                style = MaterialTheme.typography.labelLarge.copy(fontSize = 13.sp),
+                style = MaterialTheme.typography.labelLarge.copy(
+                    fontSize = 10.sp,
+                    letterSpacing = 0.7.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = textAlpha),
