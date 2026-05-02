@@ -3,11 +3,13 @@ package com.epher.app.security
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.epher.app.data.AttachmentFileStore
 import com.epher.app.data.RoomsRepository
 import com.epher.app.data.LocalRoomCacheStore
 import com.epher.app.data.PendingOutboundMessage
 import com.epher.app.data.RoomsSnapshot
 import com.epher.app.data.model.ConnectionState
+import com.epher.app.data.model.InviteExpiryPreset
 import com.epher.app.data.model.Participant
 import com.epher.app.data.model.RetentionPreset
 import com.epher.app.data.model.RoomMessage
@@ -35,6 +37,7 @@ class RoomRetentionWipeInstrumentedTest {
     private lateinit var context: Context
     private lateinit var secureBlobStore: SecureBlobStore
     private lateinit var localCacheStore: LocalRoomCacheStore
+    private lateinit var attachmentFileStore: AttachmentFileStore
     private lateinit var roomIdentityManager: RoomIdentityManager
     private lateinit var secureRoomService: SecureRoomService
     private lateinit var pairwiseProtocol: PairwiseProtocolService
@@ -47,6 +50,7 @@ class RoomRetentionWipeInstrumentedTest {
         secureBlobStore = SecureBlobStore(context)
         backup = StoreBackup.capture(secureBlobStore)
         localCacheStore = LocalRoomCacheStore(secureBlobStore)
+        attachmentFileStore = AttachmentFileStore(context)
         roomIdentityManager = RoomIdentityManager(secureBlobStore)
         secureRoomService = SecureRoomService(
             secureBlobStore = secureBlobStore,
@@ -69,6 +73,7 @@ class RoomRetentionWipeInstrumentedTest {
             scope = scope,
             engine = FakeP2PEngine(),
             localCacheStore = localCacheStore,
+            attachmentFileStore = attachmentFileStore,
             roomSecurity = secureRoomService,
             pairwiseProtocol = pairwiseProtocol,
             localDisplayName = "Test User",
@@ -77,6 +82,7 @@ class RoomRetentionWipeInstrumentedTest {
         val roomId = repository.createRoom(
             label = "Leave Wipe",
             retentionPreset = RetentionPreset.LeaveOnly,
+            inviteExpiryPreset = InviteExpiryPreset.Day,
         )
         delay(250)
 
@@ -168,6 +174,7 @@ class RoomRetentionWipeInstrumentedTest {
             scope = scope,
             engine = FakeP2PEngine(),
             localCacheStore = localCacheStore,
+            attachmentFileStore = attachmentFileStore,
             roomSecurity = secureRoomService,
             pairwiseProtocol = pairwiseProtocol,
             localDisplayName = "Test User",
