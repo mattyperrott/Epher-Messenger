@@ -1,16 +1,21 @@
 package com.epher.app.ui.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.GroupAdd
+import androidx.compose.material.icons.rounded.ArrowOutward
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,8 +36,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.epher.app.data.model.ConnectionState
 import com.epher.app.data.model.Participant
 import com.epher.app.data.model.RoomSummary
@@ -45,8 +54,11 @@ import com.epher.app.ui.components.aggregateSessionIndicators
 import com.epher.app.ui.components.sessionIndicators
 import com.epher.app.ui.displayRoomLabel
 import com.epher.app.ui.theme.ChromePurple
+import com.epher.app.ui.theme.ChromePurpleDark
 import com.epher.app.ui.theme.InkCard
+import com.epher.app.ui.theme.InkPanel
 import com.epher.app.ui.theme.MistBlue
+import com.epher.app.ui.theme.SignalMint
 
 @Composable
 fun RoomListScreen(
@@ -68,14 +80,17 @@ fun RoomListScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Home")
                     }
+                    Text(
+                        text = "ROOM DIRECTORY",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 14.sp,
+                            letterSpacing = 1.6.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color = Color.White,
+                    )
                 },
                 right = {
-                    IconButton(onClick = onCreateRoom) {
-                        Icon(Icons.Rounded.Add, contentDescription = "Create room")
-                    }
-                    IconButton(onClick = onJoinRoom) {
-                        Icon(Icons.Rounded.GroupAdd, contentDescription = "Join room")
-                    }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Rounded.Settings, contentDescription = "Settings")
                     }
@@ -89,19 +104,21 @@ fun RoomListScreen(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                        .padding(horizontal = 20.dp, vertical = 22.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     item {
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
-                                text = "ROOMS",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                text = "Local Rooms",
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                ),
+                                color = Color.White,
                             )
                             Text(
                                 text = "Local and recently joined rooms stay here until you leave or the retention window expires.",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
@@ -112,29 +129,38 @@ fun RoomListScreen(
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(14.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
-                            Button(
-                                onClick = onCreateRoom,
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(52.dp),
-                                shape = RoundedCornerShape(20.dp),
-                                colors = ButtonDefaults.buttonColors(containerColor = ChromePurple),
-                            ) {
-                                Text("CREATE")
-                            }
                             OutlinedButton(
                                 onClick = onJoinRoom,
                                 modifier = Modifier
                                     .weight(1f)
-                                    .height(52.dp),
+                                    .height(56.dp),
                                 shape = RoundedCornerShape(20.dp),
+                                border = BorderStroke(2.dp, ChromePurple),
                                 colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = ChromePurple.copy(alpha = 0.30f),
                                     contentColor = MaterialTheme.colorScheme.onSurface,
                                 ),
                             ) {
+                                Icon(Icons.Rounded.GroupAdd, contentDescription = null, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.size(8.dp))
                                 Text("JOIN")
+                            }
+                            Button(
+                                onClick = onCreateRoom,
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(56.dp),
+                                shape = RoundedCornerShape(20.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = ChromePurple,
+                                    contentColor = Color.White,
+                                ),
+                            ) {
+                                Icon(Icons.Rounded.Add, contentDescription = null, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.size(8.dp))
+                                Text("CREATE")
                             }
                         }
                     }
@@ -174,45 +200,75 @@ private fun RoomCard(
             .clickable(onClick = onClick),
         color = InkCard,
         shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top,
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(130.dp)
+                    .background(ChromePurple.copy(alpha = 0.04f), CircleShape),
+            )
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Top,
                 ) {
-                    Text(
-                        text = displayRoomLabel(room),
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = room.id,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MistBlue,
-                        maxLines = 1,
-                    )
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                    ) {
+                        Text(
+                            text = displayRoomLabel(room),
+                            style = MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp,
+                            ),
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Surface(
+                            color = Color.Black.copy(alpha = 0.20f),
+                            shape = RoundedCornerShape(7.dp),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
+                        ) {
+                            Text(
+                                text = "ID: ${room.id}",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                color = MistBlue,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        RoomStateBadge(state = room.connectionState)
+                        Icon(
+                            Icons.Rounded.ArrowOutward,
+                            contentDescription = null,
+                            tint = MistBlue,
+                            modifier = Modifier.size(20.dp),
+                        )
+                    }
                 }
-                RoomStateBadge(state = room.connectionState)
-            }
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                StatusChip(label = "${room.participantCount} peers")
-                StatusChip(label = room.retentionPreset.label)
-                if (room.unreadCount > 0) {
-                    StatusChip(label = "${room.unreadCount} new")
-                }
-                if (room.pendingOutgoingCount > 0) {
-                    StatusChip(label = "${room.pendingOutgoingCount} queued")
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    StatusChip(label = "${room.participantCount} peers")
+                    StatusChip(label = room.retentionPreset.label)
+                    if (room.unreadCount > 0) {
+                        StatusChip(label = "${room.unreadCount} new")
+                    }
+                    if (room.pendingOutgoingCount > 0) {
+                        StatusChip(label = "${room.pendingOutgoingCount} queued")
+                    }
                 }
             }
         }
@@ -229,19 +285,37 @@ private fun RoomStateBadge(
             ConnectionState.Connecting -> ChromePurple.copy(alpha = 0.18f)
             ConnectionState.Connected -> ChromePurple
             ConnectionState.Reconnecting -> ChromePurple.copy(alpha = 0.18f)
-            ConnectionState.Backgrounded -> InkCard
-            ConnectionState.Expired -> InkCard
+            ConnectionState.Backgrounded -> InkPanel
+            ConnectionState.Expired -> ChromePurpleDark
         },
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
     ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+            horizontalArrangement = Arrangement.spacedBy(7.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(7.dp)
+                    .background(
+                        if (state == ConnectionState.Connected) SignalMint else MistBlue.copy(alpha = 0.52f),
+                        CircleShape,
+                    ),
+            )
         Text(
             text = state.label.uppercase(),
-            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-            style = MaterialTheme.typography.labelMedium,
+                style = MaterialTheme.typography.labelMedium.copy(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.7.sp,
+                ),
             color = if (state == ConnectionState.Connected) {
-                androidx.compose.ui.graphics.Color.White
+                    Color.White
             } else {
                 MaterialTheme.colorScheme.onSurface
             },
         )
     }
+}
 }

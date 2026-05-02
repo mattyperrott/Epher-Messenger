@@ -1,12 +1,17 @@
 package com.epher.app.ui.screens
 
 import android.content.Intent
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -15,6 +20,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.ArrowOutward
 import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Fingerprint
+import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -36,21 +43,22 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.epher.app.data.model.ConnectionState
+import androidx.compose.ui.unit.sp
 import com.epher.app.data.model.Participant
 import com.epher.app.data.model.RoomSummary
 import com.epher.app.ui.components.AppBodyPanel
 import com.epher.app.ui.components.BottomStatusStrip
-import com.epher.app.ui.components.DetailLine
 import com.epher.app.ui.components.EpherBackdrop
 import com.epher.app.ui.components.EpherTopChrome
-import com.epher.app.ui.components.NoticeCard
 import com.epher.app.ui.components.sessionIndicators
 import com.epher.app.ui.displayRoomLabel
 import com.epher.app.ui.theme.ChromePurple
 import com.epher.app.ui.theme.AlertRed
 import com.epher.app.ui.theme.InkCard
+import com.epher.app.ui.theme.MistBlue
+import com.epher.app.ui.theme.SignalMint
 import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
@@ -86,8 +94,21 @@ fun RoomSafetyScreen(
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                     }
+                    Text(
+                        text = "${displayRoomLabel(room)} AUDIT",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 14.sp,
+                            letterSpacing = 1.5.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color = Color.White,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
                 },
-                right = {},
+                right = {
+                    Box(modifier = Modifier.size(48.dp))
+                },
             )
             AppBodyPanel(
                 modifier = Modifier
@@ -98,22 +119,13 @@ fun RoomSafetyScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .verticalScroll(rememberScrollState())
-                        .padding(horizontal = 18.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                        .padding(horizontal = 20.dp, vertical = 22.dp),
+                    verticalArrangement = Arrangement.spacedBy(22.dp),
                 ) {
                     Text(
-                        text = "${displayRoomLabel(room)} safety",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        text = "Identity, invite, and retention details for this room session.",
-                        style = MaterialTheme.typography.bodyMedium,
+                        text = "Cryptographic parameters and trust metrics for the current session. Review carefully.",
+                        style = MaterialTheme.typography.bodyMedium.copy(lineHeight = 22.sp),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    NoticeCard(
-                        title = "RETENTION STATUS",
-                        body = retentionStatus,
                     )
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -123,7 +135,7 @@ fun RoomSafetyScreen(
                             modifier = Modifier.weight(1f),
                             label = "COPY INVITE",
                             icon = Icons.Rounded.ContentCopy,
-                            containerColor = ChromePurple,
+                            containerColor = InkCard,
                             contentColor = Color.White,
                             onClick = {
                                 clipboardManager.setText(AnnotatedString(room.invitePackage.inviteToken))
@@ -166,42 +178,51 @@ fun RoomSafetyScreen(
                     }
                     SafetyActionButton(
                         modifier = Modifier.fillMaxWidth(),
-                        label = "LEAVE + WIPE NOW",
+                        label = "LEAVE & WIPE NOW",
                         icon = Icons.Rounded.Delete,
-                        containerColor = AlertRed,
-                        contentColor = Color.White,
+                        containerColor = AlertRed.copy(alpha = 0.16f),
+                        contentColor = AlertRed,
                         onClick = { showLeaveConfirmation = true },
                     )
-                    DetailLine(title = "ROOM ID", value = room.id)
-                    DetailLine(title = "ROOM LABEL", value = displayRoomLabel(room))
-                    DetailLine(title = "LOCAL FINGERPRINT", value = fingerprint)
-                    DetailLine(title = "OWNER FINGERPRINT", value = room.invitePackage.ownerFingerprint)
-                    DetailLine(
-                        title = "INVITE TOKEN",
-                        value = room.invitePackage.inviteToken,
-                        valueMaxLines = 2,
-                        valueOverflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    SafetyMetadataCard(
+                        title = "IDENTITY & ACCESS",
+                        icon = Icons.Rounded.Fingerprint,
+                        rows = listOf(
+                            SafetyRow("Room ID", room.id),
+                            SafetyRow("Room Label", displayRoomLabel(room)),
+                            SafetyRow("Local Fingerprint", fingerprint, maxLines = 1),
+                            SafetyRow("Owner Fingerprint", room.invitePackage.ownerFingerprint, maxLines = 1, valueColor = SignalMint),
+                            SafetyRow("Active Invite Token", room.invitePackage.inviteToken, maxLines = 2, block = true),
+                            SafetyRow("Share Link", room.invitePackage.shareUrl, maxLines = 2, block = true),
+                            SafetyRow("Invite Validity", room.invitePackage.expiresLabel),
+                            SafetyRow("Invite Signature", room.invitePackage.signatureState),
+                            SafetyRow("Owner Access", if (room.isOwner) "This device created the room" else "Invite came from a remote owner"),
+                        ),
                     )
-                    DetailLine(
-                        title = "SHARE LINK",
-                        value = room.invitePackage.shareUrl,
-                        valueMaxLines = 2,
-                        valueOverflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                    SafetyMetadataCard(
+                        title = "RETENTION",
+                        icon = Icons.Rounded.Delete,
+                        rows = listOf(
+                            SafetyRow("Status", retentionStatus, maxLines = 3),
+                            SafetyRow("Room Retention", "${room.retentionPreset.label} • ${room.retentionPreset.detail}", maxLines = 2),
+                            SafetyRow("Retention Deadline", retentionDeadline),
+                            SafetyRow("Last Activity", formatRetentionMoment(room.lastActivityEpochMillis)),
+                        ),
                     )
-                    DetailLine(title = "INVITE VALIDITY", value = room.invitePackage.expiresLabel)
-                    DetailLine(title = "INVITE SIGNATURE", value = room.invitePackage.signatureState)
-                    DetailLine(title = "OWNER ACCESS", value = if (room.isOwner) "This device created the room" else "Invite came from a remote owner")
-                    DetailLine(title = "ROOM RETENTION", value = "${room.retentionPreset.label} • ${room.retentionPreset.detail}")
-                    DetailLine(title = "RETENTION DEADLINE", value = retentionDeadline)
-                    DetailLine(title = "LAST ACTIVITY", value = formatRetentionMoment(room.lastActivityEpochMillis))
-                    DetailLine(title = "TRANSPORT", value = room.securityProfile.transportMode)
-                    DetailLine(title = "TRANSPORT ENCRYPTION", value = room.securityProfile.transportEncryption)
-                    DetailLine(title = "TRAFFIC OBFUSCATION", value = room.securityProfile.trafficObfuscation)
-                    DetailLine(title = "METADATA RETENTION", value = room.securityProfile.metadataRetention)
-                    DetailLine(title = "REPLAY PROTECTION", value = room.securityProfile.replayProtection)
-                    DetailLine(title = "FORWARD SECRECY", value = room.securityProfile.forwardSecrecy)
-                    DetailLine(title = "MESSAGE ENCRYPTION", value = room.securityProfile.messageEncryption)
-                    DetailLine(title = "KEY DERIVATION", value = room.securityProfile.keyDerivation)
+                    SafetyMetadataCard(
+                        title = "PROTOCOL PARAMETERS",
+                        icon = Icons.Rounded.Lock,
+                        rows = listOf(
+                            SafetyRow("Transport Layer", room.securityProfile.transportMode),
+                            SafetyRow("Transport Encryption", room.securityProfile.transportEncryption, maxLines = 2),
+                            SafetyRow("Message Cipher", room.securityProfile.messageEncryption),
+                            SafetyRow("Key Derivation", room.securityProfile.keyDerivation),
+                            SafetyRow("Forward Secrecy", room.securityProfile.forwardSecrecy, valueColor = SignalMint),
+                            SafetyRow("Replay Protection", room.securityProfile.replayProtection, maxLines = 2),
+                            SafetyRow("Traffic Obfuscation", room.securityProfile.trafficObfuscation, maxLines = 2),
+                            SafetyRow("Metadata Retention", room.securityProfile.metadataRetention, maxLines = 2),
+                        ),
+                    )
                 }
             }
             SnackbarHost(
@@ -255,10 +276,13 @@ private fun SafetyActionButton(
         modifier = modifier,
         color = containerColor,
         shape = RoundedCornerShape(18.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
         onClick = onClick,
     ) {
         Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            modifier = Modifier
+                .height(50.dp)
+                .padding(horizontal = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -268,6 +292,112 @@ private fun SafetyActionButton(
                 color = contentColor,
                 style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
             )
+        }
+    }
+}
+
+private data class SafetyRow(
+    val label: String,
+    val value: String,
+    val maxLines: Int = 1,
+    val block: Boolean = false,
+    val valueColor: Color? = null,
+)
+
+@Composable
+private fun SafetyMetadataCard(
+    title: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    rows: List<SafetyRow>,
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = InkCard,
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
+        shadowElevation = 4.dp,
+    ) {
+        Column {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(alpha = 0.20f))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = MistBlue,
+                    modifier = Modifier.size(17.dp),
+                )
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontSize = 10.sp,
+                        letterSpacing = 1.8.sp,
+                        fontWeight = FontWeight.Bold,
+                    ),
+                    color = MistBlue,
+                )
+            }
+            rows.forEachIndexed { index, row ->
+                if (row.block) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        Text(
+                            text = row.label,
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = MistBlue,
+                        )
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            color = Color.Black.copy(alpha = 0.28f),
+                            shape = RoundedCornerShape(10.dp),
+                        ) {
+                            Text(
+                                text = row.value,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 9.dp),
+                                style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                                color = row.valueColor ?: Color.White.copy(alpha = 0.70f),
+                                maxLines = row.maxLines,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 13.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = row.label,
+                            modifier = Modifier.weight(0.42f),
+                            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                            color = MistBlue,
+                        )
+                        Text(
+                            text = row.value,
+                            modifier = Modifier.weight(0.58f),
+                            style = MaterialTheme.typography.bodySmall.copy(fontSize = 12.sp),
+                            color = row.valueColor ?: MaterialTheme.colorScheme.onSurface,
+                            maxLines = row.maxLines,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+                if (index != rows.lastIndex) {
+                    androidx.compose.material3.HorizontalDivider(color = Color.White.copy(alpha = 0.05f))
+                }
+            }
         }
     }
 }

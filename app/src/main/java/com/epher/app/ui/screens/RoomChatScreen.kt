@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +36,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.InsertDriveFile
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.ArrowOutward
@@ -46,7 +49,6 @@ import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.FolderZip
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PictureAsPdf
@@ -75,12 +77,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
@@ -201,18 +200,67 @@ fun RoomChatScreen(
             EpherTopChrome(
                 left = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.Rounded.Menu, contentDescription = "Rooms")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Rooms")
+                    }
+                    Column(
+                        modifier = Modifier
+                            .clickable(onClick = onOpenSafety)
+                            .padding(start = 2.dp),
+                        verticalArrangement = Arrangement.spacedBy(1.dp),
+                    ) {
+                        Text(
+                            text = displayRoomLabel(room),
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                            ),
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        Text(
+                            text = "ID: ${room.id}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                            ),
+                            color = Color.White.copy(alpha = 0.70f),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
                     }
                 },
                 right = {
-                    IconButton(onClick = { showLeaveConfirmation = true }) {
-                        Icon(Icons.Rounded.Delete, contentDescription = "Leave room")
-                    }
                     IconButton(onClick = onOpenRoster) {
-                        Icon(Icons.Rounded.Person, contentDescription = "Peers")
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(Icons.Rounded.Person, contentDescription = "Peers")
+                            Surface(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(17.dp),
+                                color = InkPanel,
+                                shape = CircleShape,
+                                border = BorderStroke(1.dp, ChromePurple),
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = participants.size.coerceAtMost(9).toString(),
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            fontSize = 8.sp,
+                                            fontWeight = FontWeight.Bold,
+                                        ),
+                                        color = Color.White,
+                                        textAlign = TextAlign.Center,
+                                    )
+                                }
+                            }
+                        }
                     }
                     IconButton(onClick = onOpenSafety) {
                         Icon(Icons.Rounded.Settings, contentDescription = "Info")
+                    }
+                    IconButton(onClick = { showLeaveConfirmation = true }) {
+                        Icon(Icons.Rounded.Delete, contentDescription = "Leave room")
                     }
                 },
             )
@@ -230,43 +278,13 @@ fun RoomChatScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(horizontal = 14.dp, vertical = 16.dp)
-                            .padding(bottom = if (imeVisible) 96.dp else 104.dp),
+                            .padding(horizontal = 14.dp, vertical = 14.dp)
+                            .padding(bottom = if (imeVisible) 86.dp else 96.dp),
                     ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 18.sp,
-                                    ),
-                                ) {
-                                    append(displayRoomLabel(room))
-                                }
-                                append("  ")
-                                withStyle(
-                                    SpanStyle(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.52f),
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 14.sp,
-                                    ),
-                                ) {
-                                    append(room.id)
-                                }
-                            },
-                            style = MaterialTheme.typography.titleMedium,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.padding(top = 12.dp, bottom = 16.dp),
-                            color = ChromePurple.copy(alpha = 0.15f),
-                        )
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
                             state = listState,
-                            verticalArrangement = Arrangement.spacedBy(14.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
                             items(messages, key = { it.id }) { message ->
                                 ChatMessageBubble(
@@ -284,7 +302,8 @@ fun RoomChatScreen(
                     MessageComposer(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
-                            .padding(start = 14.dp, top = 8.dp, end = 14.dp, bottom = 10.dp),
+                            .background(MaterialTheme.colorScheme.background.copy(alpha = 0.96f))
+                            .padding(start = 14.dp, top = 10.dp, end = 14.dp, bottom = 12.dp),
                         value = composer,
                         onValueChange = { composer = it },
                         onSend = {

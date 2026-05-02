@@ -1,16 +1,21 @@
 package com.epher.app.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentPaste
 import androidx.compose.material.icons.rounded.Key
@@ -35,7 +40,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.epher.app.ui.components.AppBodyPanel
 import com.epher.app.ui.components.BottomStatusStrip
 import com.epher.app.ui.components.EpherBackdrop
@@ -44,8 +51,9 @@ import com.epher.app.ui.components.ErrorNoticeCard
 import com.epher.app.ui.components.sessionIndicators
 import com.epher.app.ui.theme.ChromePurple
 import com.epher.app.ui.theme.ChromePurpleDark
+import com.epher.app.ui.theme.FieldBlue
 import com.epher.app.ui.theme.InkCard
-import com.epher.app.ui.theme.NightInk
+import com.epher.app.ui.theme.MistBlue
 
 @Composable
 fun JoinRoomScreen(
@@ -71,9 +79,22 @@ fun JoinRoomScreen(
         Column(modifier = Modifier.fillMaxSize()) {
             EpherTopChrome(
                 left = {
-                    com.epher.app.ui.components.GlitchLogo(modifier = Modifier.size(60.dp), size = 46)
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                    }
+                    Text(
+                        text = "JOIN ROOM",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 14.sp,
+                            letterSpacing = 1.8.sp,
+                            fontWeight = FontWeight.Bold,
+                        ),
+                        color = Color.White,
+                    )
                 },
-                right = {},
+                right = {
+                    Spacer(modifier = Modifier.size(48.dp))
+                },
             )
             AppBodyPanel(
                 modifier = Modifier
@@ -83,32 +104,43 @@ fun JoinRoomScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 22.dp, vertical = 20.dp),
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 22.dp, vertical = 28.dp),
                     contentAlignment = Alignment.Center,
                 ) {
                     Surface(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .offset(y = -18.dp),
-                        color = NightInk,
+                        modifier = Modifier.fillMaxWidth(),
+                        color = Color.Transparent,
                         shape = RoundedCornerShape(26.dp),
                         shadowElevation = 0.dp,
                     ) {
                         Column(
-                            modifier = Modifier.padding(horizontal = 28.dp, vertical = 30.dp),
-                            verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(24.dp),
+                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            Icon(
-                                Icons.Rounded.Key,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                modifier = Modifier.size(42.dp),
-                            )
+                            Surface(
+                                modifier = Modifier.size(72.dp),
+                                color = InkCard,
+                                shape = RoundedCornerShape(24.dp),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        Icons.Rounded.Key,
+                                        contentDescription = null,
+                                        tint = MistBlue,
+                                        modifier = Modifier.size(38.dp),
+                                    )
+                                }
+                            }
                             Text(
                                 text = "JOIN ROOM",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.8.sp,
+                                ),
+                                color = Color.White,
                             )
                             Text(
                                 text = if (prefilledInviteToken.isNullOrBlank()) {
@@ -122,7 +154,7 @@ fun JoinRoomScreen(
                             if (errorMessage != null) {
                                 Column(
                                     modifier = Modifier.fillMaxWidth(),
-                                    verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(4.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
                                 ) {
                                     ErrorNoticeCard(body = errorMessage)
                                     TextButton(onClick = onDismissError) {
@@ -156,12 +188,9 @@ fun JoinRoomScreen(
                             }
                             Surface(
                                 modifier = Modifier.fillMaxWidth(),
-                                color = InkCard,
+                                color = FieldBlue,
                                 shape = RoundedCornerShape(20.dp),
-                                border = BorderStroke(
-                                    1.dp,
-                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.16f),
-                                ),
+                                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.06f)),
                             ) {
                                 Row(
                                     modifier = Modifier
@@ -174,8 +203,8 @@ fun JoinRoomScreen(
                                         onValueChange = { inviteToken = it },
                                         modifier = Modifier.weight(1f),
                                         enabled = !isSubmitting,
-                                        singleLine = true,
-                                        maxLines = 1,
+                                        minLines = 1,
+                                        maxLines = 4,
                                         label = { Text("INVITE TOKEN") },
                                         placeholder = { Text("Paste invite token") },
                                         colors = TextFieldDefaults.colors(
@@ -196,7 +225,7 @@ fun JoinRoomScreen(
                             }
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(
+                                horizontalArrangement = Arrangement.spacedBy(
                                     18.dp,
                                     Alignment.End,
                                 ),
